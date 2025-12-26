@@ -32,7 +32,7 @@ const staggerContainer = {
   }
 };
 
-// Stats Counter Component
+// Stats Counter Component - Liquid Glass Style
 function StatCounter({ end, suffix = "", label, delay = 0 }: { end: number; suffix?: string; label: string; delay?: number }) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
@@ -71,12 +71,11 @@ function StatCounter({ end, suffix = "", label, delay = 0 }: { end: number; suff
   }, [isInView, end, delay]);
 
   return (
-    <div ref={ref} className="group cursor-default">
-      <div className="text-4xl lg:text-5xl font-bold text-yellow-400 mb-2 transition-transform group-hover:scale-110">
+    <div ref={ref} className="cursor-default">
+      <div className="text-4xl lg:text-5xl font-bold text-primary mb-2">
         {count}{suffix}
       </div>
-      <div className="text-sm text-white/80 font-medium">{label}</div>
-      <div className="h-1 w-0 group-hover:w-full bg-yellow-400 transition-all duration-300 rounded-full mt-2" />
+      <div className="text-sm text-slate-700 font-medium">{label}</div>
     </div>
   );
 }
@@ -121,17 +120,22 @@ function HeroSection({ scrollToConsultation }: { scrollToConsultation: () => voi
           </Button>
         </motion.div>
 
-        {/* Stats Overlay Band */}
+        {/* Stats Overlay Band - Liquid Glass */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="stats-band max-w-5xl mx-auto w-full"
+          className="max-w-5xl mx-auto w-full"
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            <StatCounter end={100} suffix="%" label="3年連続 大学進学率" delay={0} />
-            <StatCounter end={365} label="徹底した学習管理" delay={200} />
-            <StatCounter end={1} label="1日単位の学習計画" delay={400} />
+          <div className="liquid-glass px-8 lg:px-12 py-8 rounded-3xl">
+            {/* Internal subtle gradient for contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/10 to-transparent rounded-3xl pointer-events-none" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 relative z-10">
+              <StatCounter end={100} suffix="%" label="3年連続 大学進学率" delay={0} />
+              <StatCounter end={365} label="徹底した学習管理" delay={200} />
+              <StatCounter end={1} label="1日単位の学習計画" delay={400} />
+            </div>
           </div>
         </motion.div>
       </div>
@@ -253,7 +257,7 @@ export default function Home() {
                 ))}
               </motion.div>
 
-              {/* Right: Cause with Diagram */}
+              {/* Right: Cause with Visual Comparison (No symbols) */}
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -267,7 +271,7 @@ export default function Home() {
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-yellow-500/5 rounded-full blur-3xl" />
                   
                   <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-6">
+                    <div className="info-badge inline-flex items-center gap-2 text-primary mb-6">
                       <Zap className="h-4 w-4" />
                       原因はこれ
                     </div>
@@ -276,22 +280,52 @@ export default function Home() {
                       大学受験では学習の難易度や幅が広く...
                     </h3>
                     
-                    {/* Visual Comparison */}
-                    <div className="space-y-6 mb-6">
-                      <div className="flex items-center gap-4">
-                        <div className="flex-1 bg-white p-4 rounded-xl border-2 border-primary shadow-sm">
-                          <div className="text-primary font-bold mb-1">学習計画</div>
-                          <div className="text-sm text-slate-600">最短ルートの設計</div>
+                    {/* Visual Comparison - 2 Column */}
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      {/* Left: General State */}
+                      <div className="space-y-3">
+                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">一般的な状態</div>
+                        <div className="bg-slate-50 p-4 rounded-xl">
+                          <div className="flex items-start gap-2">
+                            <HelpCircle className="h-5 w-5 text-slate-400 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <div className="font-medium text-slate-700 mb-1">計画なし</div>
+                              <div className="text-xs text-slate-500">何から始める？</div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-3xl font-bold text-primary">×</div>
+                        <div className="bg-slate-50 p-4 rounded-xl">
+                          <div className="flex items-start gap-2">
+                            <HelpCircle className="h-5 w-5 text-slate-400 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <div className="font-medium text-slate-700 mb-1">方法不明</div>
+                              <div className="text-xs text-slate-500">効率悪い</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      
-                      <div className="flex items-center gap-4">
-                        <div className="flex-1 bg-white p-4 rounded-xl border-2 border-yellow-500 shadow-sm">
-                          <div className="text-yellow-600 font-bold mb-1">学習のやり方</div>
-                          <div className="text-sm text-slate-600">効率的な実行</div>
+
+                      {/* Right: With Encourage */}
+                      <div className="space-y-3">
+                        <div className="text-xs font-bold text-primary uppercase tracking-wider mb-2">エンカレッジ</div>
+                        <div className="frosted-glass p-4 rounded-xl border border-primary/30">
+                          <div className="flex items-start gap-2">
+                            <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                            <div>
+                              <div className="font-bold text-primary mb-1">学習計画</div>
+                              <div className="text-xs text-slate-600">最短ルート設計</div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-3xl font-bold text-yellow-500">=</div>
+                        <div className="frosted-glass p-4 rounded-xl border border-primary/30">
+                          <div className="flex items-start gap-2">
+                            <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                            <div>
+                              <div className="font-bold text-primary mb-1">学習のやり方</div>
+                              <div className="text-xs text-slate-600">効率的実行</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -467,9 +501,15 @@ export default function Home() {
               viewport={{ once: true }}
               className="text-center mb-12"
             >
-              <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-4">
+              <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-6">
                 なぜ大学受験に学習管理が必要なのか？
               </h2>
+              
+              {/* Conclusion Label - Info badge, not a button */}
+              <div className="inline-flex items-center gap-2 info-badge text-slate-700 text-sm">
+                <Zap className="h-4 w-4" />
+                結論：大学受験は"設計と継続"で差がつく。だから管理が必要
+              </div>
             </motion.div>
 
             {/* Horizontal Infographic Band */}
@@ -486,6 +526,7 @@ export default function Home() {
                     {[
                       {
                         icon: School,
+                        tag: "分岐",
                         title: "大学学部・試験方式",
                         subtitle: "求められる力が異なる",
                         color: "text-blue-600",
@@ -493,6 +534,7 @@ export default function Home() {
                       },
                       {
                         icon: BookOpen,
+                        tag: "広い",
                         title: "学習範囲・深さ",
                         subtitle: "高校受験と段違い",
                         color: "text-purple-600",
@@ -500,6 +542,7 @@ export default function Home() {
                       },
                       {
                         icon: Video,
+                        tag: "迷子",
                         title: "教材・ツール",
                         subtitle: "溢れている",
                         color: "text-amber-600",
@@ -519,9 +562,9 @@ export default function Home() {
                           <item.icon className="h-10 w-10" />
                         </div>
 
-                        {/* Number Badge */}
-                        <div className="inline-block bg-slate-900 text-white text-sm font-bold px-3 py-1 rounded-full mb-4">
-                          0{idx + 1}
+                        {/* Tag - Small badge for instant meaning */}
+                        <div className="inline-block bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded mb-3">
+                          {item.tag}
                         </div>
 
                         {/* Title */}
@@ -559,7 +602,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Meaningful Arrow - Misconception → Solution */}
+        {/* Anxiety → Cause Tag → Solution (Speech Bubble Style) */}
         <section className="py-24 bg-slate-50">
           <div className="container mx-auto px-4">
             <motion.div
@@ -574,76 +617,52 @@ export default function Home() {
               </h2>
             </motion.div>
 
-            <div className="max-w-6xl mx-auto space-y-8">
+            <div className="max-w-6xl mx-auto space-y-10">
               {[
                 {
-                  misconception: { icon: Video, text: "映像授業をたくさん受けているけど伸びない", color: "text-red-600", bg: "bg-red-50" },
-                  cause: "復習計画が不足",
-                  solution: { text: "アウトプット（復習）の計画まで徹底管理", highlight: "復習スケジュール" }
+                  anxiety: "映像授業をたくさん受けてるけど伸びない...",
+                  cause: "復習設計がない",
+                  solution: "復習スケジュールまで徹底管理"
                 },
                 {
-                  misconception: { icon: School, text: "集団塾に頑張って通っているけど...", color: "text-orange-600", bg: "bg-orange-50" },
+                  anxiety: "集団塾に通ってるけど成績が上がらない...",
                   cause: "レベルが合わない",
-                  solution: { text: "あなたの学力・志望校に合わせた個別カリキュラム", highlight: "個別最適化" }
+                  solution: "個別最適化カリキュラム"
                 }
               ].map((item, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: idx * 0.2 }}
+                  transition={{ duration: 0.6, delay: idx * 0.15 }}
                   viewport={{ once: true }}
-                  className="bg-white rounded-3xl p-8 lg:p-10"
+                  className="flex flex-col md:flex-row items-center gap-6 bg-white p-6 lg:p-8 rounded-2xl"
                 >
-                  <div className="grid lg:grid-cols-[1fr,auto,1fr] gap-8 items-center">
-                    {/* Left: Misconception */}
-                    <div className="text-center lg:text-right">
-                      <div className={`inline-flex items-center gap-3 ${item.misconception.bg} px-6 py-4 rounded-2xl`}>
-                        <item.misconception.icon className={`h-8 w-8 ${item.misconception.color} flex-shrink-0`} />
-                        <span className="text-lg font-medium text-slate-800">{item.misconception.text}</span>
-                      </div>
-                    </div>
+                  {/* Speech Bubble - Anxiety */}
+                  <div className="relative bg-orange-50 border border-orange-200 px-6 py-4 rounded-2xl flex-1 max-w-sm">
+                    <p className="text-slate-800 font-medium">{item.anxiety}</p>
+                    {/* Triangle pointer */}
+                    <div className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-l-8 border-l-orange-200 border-b-8 border-b-transparent" />
+                  </div>
 
-                    {/* Center: Arrow with Cause */}
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="relative">
-                        {/* Animated Arrow */}
-                        <motion.div
-                          initial={{ x: -10, opacity: 0 }}
-                          whileInView={{ x: 0, opacity: 1 }}
-                          transition={{ duration: 0.8, delay: 0.3 + idx * 0.2 }}
-                          viewport={{ once: true }}
-                        >
-                          <ArrowRight className="h-12 w-12 text-primary" />
-                        </motion.div>
-                        
-                        {/* Cause Label */}
-                        <motion.div
-                          initial={{ scale: 0, opacity: 0 }}
-                          whileInView={{ scale: 1, opacity: 1 }}
-                          transition={{ duration: 0.5, delay: 0.5 + idx * 0.2 }}
-                          viewport={{ once: true }}
-                          className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap"
-                        >
-                          <span className="inline-block bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-full">
-                            原因: {item.cause}
-                          </span>
-                        </motion.div>
-                      </div>
-                    </div>
+                  {/* Cause Tag - Info badge (not a button) */}
+                  <div className="info-badge text-slate-700 whitespace-nowrap flex items-center gap-2 flex-shrink-0">
+                    <span className="text-xs font-bold">原因:</span>
+                    <span className="font-medium">{item.cause}</span>
+                  </div>
 
-                    {/* Right: Solution */}
-                    <div className="text-center lg:text-left mt-8 lg:mt-0">
-                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 px-6 py-4 rounded-2xl border-2 border-primary">
-                        <div className="flex items-center gap-2 mb-2">
-                          <CheckCircle2 className="h-5 w-5 text-primary" />
-                          <span className="text-xs font-bold text-primary uppercase">Solution</span>
-                        </div>
-                        <p className="text-lg font-medium text-slate-800">
-                          {item.solution.text.split(item.solution.highlight)[0]}
-                          <span className="font-bold text-primary">{item.solution.highlight}</span>
-                          {item.solution.text.split(item.solution.highlight)[1]}
-                        </p>
+                  {/* Arrow */}
+                  <div className="hidden md:block text-primary flex-shrink-0">
+                    <ArrowRight className="h-8 w-8" />
+                  </div>
+
+                  {/* Solution with check */}
+                  <div className="frosted-glass border border-primary/30 px-6 py-4 rounded-2xl flex-1 max-w-sm">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <div className="text-xs font-bold text-primary uppercase mb-1">Solution</div>
+                        <p className="text-slate-800 font-medium">{item.solution}</p>
                       </div>
                     </div>
                   </div>
@@ -745,72 +764,32 @@ export default function Home() {
               <p className="text-slate-600">6つの強みであなたの合格を徹底サポート</p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {/* Strength 1 */}
-              <div className="p-8 bg-slate-50 rounded-xl border border-slate-200 hover:shadow-lg transition-all">
-                <div className="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center mb-4">
-                  <Target className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">合格逆算カリキュラム作成</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  志望校合格から逆算して、最短ルートの学習計画を作成します。
-                </p>
-              </div>
-
-              {/* Strength 2 */}
-              <div className="p-8 bg-slate-50 rounded-xl border border-slate-200 hover:shadow-lg transition-all">
-                <div className="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center mb-4">
-                  <Video className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">映像授業も積極活用し最適化</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  映像授業と参考書を組み合わせた、効率的な学習を実現します。
-                </p>
-              </div>
-
-              {/* Strength 3 */}
-              <div className="p-8 bg-slate-50 rounded-xl border border-slate-200 hover:shadow-lg transition-all">
-                <div className="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">現役難関大生との個別指導で毎週"解ける状態"まで伴走</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  東大・京大・早慶などの難関大生が、分からないを解決します。
-                </p>
-              </div>
-
-              {/* Strength 4 */}
-              <div className="p-8 bg-slate-50 rounded-xl border border-slate-200 hover:shadow-lg transition-all">
-                <div className="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center mb-4">
-                  <MessageCircle className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">元予備校校舎長と週1回の学習会議</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  プロの視点で進捗を確認し、最適な学習プランを提供します。
-                </p>
-              </div>
-
-              {/* Strength 5 */}
-              <div className="p-8 bg-slate-50 rounded-xl border border-slate-200 hover:shadow-lg transition-all">
-                <div className="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center mb-4">
-                  <ShieldCheck className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">専属コンサルタントが徹底管理</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  あなた専属のコンサルタントが、合格まで徹底サポートします。
-                </p>
-              </div>
-
-              {/* Strength 6 */}
-              <div className="p-8 bg-slate-50 rounded-xl border border-slate-200 hover:shadow-lg transition-all">
-                <div className="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center mb-4">
-                  <BookOpen className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">全国どこでも受講可能</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  オンラインなので、全国どこからでも受講できます。
-                </p>
-              </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {[
+                { icon: Target, title: "合格逆算カリキュラム作成", desc: "志望校合格から逆算して、最短ルートの学習計画を作成します。" },
+                { icon: Video, title: "映像授業も積極活用し最適化", desc: "映像授業と参考書を組み合わせた、効率的な学習を実現します。" },
+                { icon: Users, title: "現役難関大生との個別指導で毎週"解ける状態"まで伴走", desc: "東大・京大・早慶などの難関大生が、分からないを解決します。" },
+                { icon: MessageCircle, title: "元予備校校舎長と週1回の学習会議", desc: "プロの視点で進捗を確認し、最適な学習プランを提供します。" },
+                { icon: ShieldCheck, title: "専属コンサルタントが徹底管理", desc: "あなた専属のコンサルタントが、合格まで徹底サポートします。" },
+                { icon: BookOpen, title: "全国どこでも受講可能", desc: "オンラインなので、全国どこからでも受講できます。" }
+              ].map((strength, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  viewport={{ once: true }}
+                  className="frosted-glass p-8 rounded-2xl"
+                >
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                    <strength.icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-3">{strength.title}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    {strength.desc}
+                  </p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
@@ -988,39 +967,107 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Block 15: Uniqueness - System */}
+        {/* Block 15: Uniqueness - Convergence System (No = symbol) */}
         <section className="py-20 bg-slate-50">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
                 エンカレッジの独自体制
               </h2>
-              <div className="space-y-6">
-                <div className="p-8 bg-white rounded-xl border border-slate-200 shadow-md">
-                  <div className="flex items-center justify-center gap-4 mb-4">
-                    <ShieldCheck className="h-12 w-12 text-primary" />
-                    <h3 className="text-2xl font-bold text-slate-900">学習管理</h3>
-                  </div>
-                  <p className="text-lg text-slate-700">予備校校舎長経験者がトータルサポート</p>
+              <p className="text-slate-600">2つの専門性が合流し、強力なサポートを実現</p>
+            </motion.div>
+
+            <div className="max-w-5xl mx-auto">
+              {/* Y-shape Convergence Layout */}
+              <div className="relative">
+                {/* Two Sources */}
+                <div className="grid md:grid-cols-2 gap-8 mb-12">
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    viewport={{ once: true }}
+                    className="frosted-glass p-8 rounded-2xl"
+                  >
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+                        <ShieldCheck className="h-8 w-8 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-900">学習管理</h3>
+                    </div>
+                    <p className="text-slate-700">予備校校舎長経験者がトータルサポート</p>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    viewport={{ once: true }}
+                    className="frosted-glass p-8 rounded-2xl"
+                  >
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+                        <Users className="h-8 w-8 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-900">個別指導</h3>
+                    </div>
+                    <p className="text-slate-700">難関大在籍の現役大学生講師</p>
+                  </motion.div>
                 </div>
 
-                <div className="text-4xl font-bold text-primary">×</div>
-
-                <div className="p-8 bg-white rounded-xl border border-slate-200 shadow-md">
-                  <div className="flex items-center justify-center gap-4 mb-4">
-                    <Users className="h-12 w-12 text-primary" />
-                    <h3 className="text-2xl font-bold text-slate-900">個別指導</h3>
+                {/* Convergence Lines */}
+                <div className="hidden md:flex justify-center mb-8 relative h-16">
+                  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 80" preserveAspectRatio="none">
+                    <path
+                      d="M 100 0 Q 100 40 200 80"
+                      stroke="url(#gradient1)"
+                      strokeWidth="3"
+                      fill="none"
+                      opacity="0.6"
+                    />
+                    <path
+                      d="M 300 0 Q 300 40 200 80"
+                      stroke="url(#gradient1)"
+                      strokeWidth="3"
+                      fill="none"
+                      opacity="0.6"
+                    />
+                    <defs>
+                      <linearGradient id="gradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#1e40af" stopOpacity="0.3" />
+                        <stop offset="100%" stopColor="#1e40af" stopOpacity="0.8" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  
+                  {/* Connection Label - Not a button */}
+                  <div className="info-badge absolute bottom-0 left-1/2 -translate-x-1/2 text-slate-700">
+                    連携
                   </div>
-                  <p className="text-lg text-slate-700">難関大在籍の現役大学生講師</p>
                 </div>
 
-                <div className="text-2xl font-bold text-primary mt-8">＝</div>
-
-                <div className="p-8 bg-gradient-to-br from-blue-50 to-yellow-50 rounded-xl border-2 border-primary shadow-lg">
-                  <p className="text-2xl font-bold text-slate-900">
+                {/* Result / Goal */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                  viewport={{ once: true }}
+                  className="bg-gradient-to-br from-blue-50 to-white p-8 lg:p-10 rounded-2xl border-2 border-primary/30 text-center"
+                >
+                  <div className="inline-flex items-center gap-3 mb-4">
+                    <CheckCircle2 className="h-8 w-8 text-primary" />
+                    <span className="text-sm font-bold text-primary uppercase tracking-wider">Result</span>
+                  </div>
+                  <p className="text-2xl lg:text-3xl font-bold text-slate-900">
                     一丸で第一志望合格をサポート
                   </p>
-                </div>
+                </motion.div>
               </div>
             </div>
           </div>
@@ -1269,7 +1316,7 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Destination Flag */}
+                {/* Destination Label - NOT a button */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -1277,10 +1324,9 @@ export default function Home() {
                   viewport={{ once: true }}
                   className="mt-12 text-center"
                 >
-                  <div className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 px-8 py-4 rounded-full font-bold text-lg shadow-lg">
-                    <Star className="h-6 w-6" />
-                    志望校合格へ
-                    <Star className="h-6 w-6" />
+                  <div className="inline-flex items-center gap-3 frosted-glass px-6 py-3 rounded-xl border border-yellow-500/30">
+                    <CheckCircle2 className="h-5 w-5 text-yellow-600" />
+                    <span className="text-slate-900 font-bold text-lg">志望校合格へ</span>
                   </div>
                 </motion.div>
               </div>
@@ -1363,12 +1409,15 @@ export default function Home() {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 lg:p-12">
               <div className="text-center mb-10">
-                <Badge className="bg-yellow-500 text-slate-900 mb-4 hover:bg-yellow-500 text-lg px-6 py-2">かんたん60秒</Badge>
                 <h2 className="text-3xl lg:text-4xl font-bold mb-4">無料カウンセリングを予約</h2>
-                <p className="text-slate-300 text-lg">
+                <p className="text-slate-300 text-lg mb-4">
                   無理な勧誘は一切ありません。<br/>
                   あなたの学習の悩みを解決するヒントをお持ち帰りください。
                 </p>
+                <div className="info-badge inline-flex items-center gap-2 text-slate-100">
+                  <Clock className="h-3.5 w-3.5" />
+                  <span>かんたん60秒で完了</span>
+                </div>
               </div>
 
               <form onSubmit={handleConsultation} className="space-y-6 max-w-md mx-auto">

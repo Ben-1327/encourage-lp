@@ -227,10 +227,26 @@
     @apply w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent my-12;
   }
 
-  /* Modern Stats Band */
-  .stats-band {
-    @apply bg-white/95 backdrop-blur-md px-8 py-6 rounded-2xl;
-    box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.12);
+  /* Liquid Glass / Frosted Glass Utilities */
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .frosted-glass {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .info-badge {
+    @apply frosted-glass;
+    @apply px-3 py-1.5 rounded-lg text-xs font-medium;
+    /* No shadow, no hover - not a button */
   }
 
   /* Accent colors as utilities */
