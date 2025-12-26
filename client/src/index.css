@@ -227,6 +227,21 @@
     @apply w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent my-12;
   }
 
+  /* Accent colors as utilities */
+  .bg-tertiary {
+    background-color: var(--tertiary);
+  }
+  
+  .text-tertiary {
+    color: var(--tertiary);
+  }
+
+  .border-tertiary {
+    border-color: var(--tertiary);
+  }
+}
+
+@layer utilities {
   /* Liquid Glass / Frosted Glass Utilities */
   .liquid-glass {
     background: rgba(255, 255, 255, 0.7);
@@ -244,21 +259,14 @@
   }
 
   .info-badge {
-    @apply frosted-glass;
-    @apply px-3 py-1.5 rounded-lg text-xs font-medium;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
     /* No shadow, no hover - not a button */
-  }
-
-  /* Accent colors as utilities */
-  .bg-tertiary {
-    background-color: var(--tertiary);
-  }
-  
-  .text-tertiary {
-    color: var(--tertiary);
-  }
-
-  .border-tertiary {
-    border-color: var(--tertiary);
   }
 }
