@@ -83,6 +83,10 @@
   --accent: oklch(0.85 0.15 90); /* Bright Yellow - #eab308 equivalent */
   --accent-foreground: oklch(0.2 0 0);
 
+  /* Third accent color - Calm Teal for strategic emphasis */
+  --tertiary: oklch(0.65 0.12 180); /* Calm Teal/Mint - #14b8a6 equivalent */
+  --tertiary-foreground: oklch(1 0 0);
+
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
 
@@ -90,7 +94,7 @@
   --input: oklch(0.92 0.01 260);
   --ring: oklch(0.85 0.15 90); /* Yellow ring for emphasis */
 
-  --radius: 0.5rem;
+  --radius: 0.75rem; /* Modern, not too round */
 
   --chart-1: oklch(0.45 0.15 265);
   --chart-2: oklch(0.85 0.15 90);
@@ -206,13 +210,13 @@
     }
   }
 
-  /* Premium Calm Futurism Utilities */
-  .glass-premium {
-    @apply bg-white/80 backdrop-blur-md border border-white/40 shadow-sm;
+  /* Modern LP Utilities - No Heavy Cards */
+  .glass-overlay {
+    @apply bg-white/90 backdrop-blur-lg border-0;
   }
   
-  .subtle-glow {
-    box-shadow: 0 0 30px -5px rgba(74, 144, 226, 0.1);
+  .soft-shadow {
+    box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.08);
   }
   
   .premium-gradient-text {
@@ -221,5 +225,24 @@
   
   .section-divider {
     @apply w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent my-12;
+  }
+
+  /* Modern Stats Band */
+  .stats-band {
+    @apply bg-white/95 backdrop-blur-md px-8 py-6 rounded-2xl;
+    box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Accent colors as utilities */
+  .bg-tertiary {
+    background-color: var(--tertiary);
+  }
+  
+  .text-tertiary {
+    color: var(--tertiary);
+  }
+
+  .border-tertiary {
+    border-color: var(--tertiary);
   }
 }

@@ -7,9 +7,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, ChevronRight, Clock, Calendar, Users, TrendingUp, ShieldCheck, HelpCircle, ArrowRight, Star, BookOpen, Target, Award, Video, School, MessageCircle, BarChart } from "lucide-react";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { CheckCircle2, ChevronRight, Clock, Calendar, Users, TrendingUp, ShieldCheck, HelpCircle, ArrowRight, Star, BookOpen, Target, Award, Video, School, MessageCircle, BarChart, Zap } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 // Animation variants - Subtle & Smooth
@@ -31,6 +31,131 @@ const staggerContainer = {
     }
   }
 };
+
+// Stats Counter Component
+function StatCounter({ end, suffix = "", label, delay = 0 }: { end: number; suffix?: string; label: string; delay?: number }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.5 });
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (!isInView || hasAnimated.current) return;
+    
+    hasAnimated.current = true;
+    const timer = setTimeout(() => {
+      let startTime: number | null = null;
+      const duration = 2000;
+
+      const animate = (currentTime: number) => {
+        if (!startTime) startTime = currentTime;
+        const elapsedTime = currentTime - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+        
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const currentCount = Math.floor(end * easeOutQuart);
+        
+        setCount(currentCount);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setCount(end);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [isInView, end, delay]);
+
+  return (
+    <div ref={ref} className="group cursor-default">
+      <div className="text-4xl lg:text-5xl font-bold text-yellow-400 mb-2 transition-transform group-hover:scale-110">
+        {count}{suffix}
+      </div>
+      <div className="text-sm text-white/80 font-medium">{label}</div>
+      <div className="h-1 w-0 group-hover:w-full bg-yellow-400 transition-all duration-300 rounded-full mt-2" />
+    </div>
+  );
+}
+
+// Hero Section Component
+function HeroSection({ scrollToConsultation }: { scrollToConsultation: () => void }) {
+  return (
+    <section className="relative min-h-screen overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0">
+        <img 
+          src="/images/hero-bg.png" 
+          alt="大学受験エンカレッジ" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-slate-900/75" />
+      </div>
+      
+      {/* Content */}
+      <div className="container mx-auto px-4 relative z-10 min-h-screen flex flex-col justify-center py-20">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-4xl mb-20"
+        >
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold leading-tight text-white mb-8">
+            大学受験のプロが365日学習管理。<br />
+            「不安」を自信に変えて、<br />
+            <span className="text-yellow-400">志望校合格へ。</span>
+          </h1>
+          
+          <Button 
+            size="lg" 
+            onClick={scrollToConsultation}
+            className="bg-yellow-500 hover:bg-yellow-400 text-slate-900 h-16 px-10 text-xl font-bold shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300 group"
+          >
+            <span className="flex items-center gap-3">
+              かんたん60秒 / 無料カウンセリングを予約
+              <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+            </span>
+          </Button>
+        </motion.div>
+
+        {/* Stats Overlay Band */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="stats-band max-w-5xl mx-auto w-full"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            <StatCounter end={100} suffix="%" label="3年連続 大学進学率" delay={0} />
+            <StatCounter end={365} label="徹底した学習管理" delay={200} />
+            <StatCounter end={1} label="1日単位の学習計画" delay={400} />
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+      >
+        <div className="flex flex-col items-center gap-2 text-white/60">
+          <span className="text-xs uppercase tracking-wider">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronRight className="h-5 w-5 rotate-90" />
+          </motion.div>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
 
 export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,297 +194,510 @@ export default function Home() {
       </header>
 
       <main className="pt-16">
-        {/* Hero Section - Background Image */}
-        <section className="relative min-h-[90vh] lg:min-h-[95vh] overflow-hidden">
-          {/* Background Image with Overlay */}
-          <div className="absolute inset-0">
-            <img 
-              src="/images/hero-bg.png" 
-              alt="大学受験エンカレッジ" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-slate-900/75 to-slate-900/70" />
-            <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.02]" />
-          </div>
-          
-          <div className="container mx-auto px-4 relative z-10 min-h-[90vh] lg:min-h-[95vh] flex items-center">
-            <div className="max-w-4xl">
-              <motion.div 
-                initial="hidden"
-                animate="visible"
-                variants={fadeIn}
-                className="space-y-6 lg:space-y-8"
-              >
-                <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold leading-tight text-white">
-                  大学受験のプロが365日学習管理。<br />
-                  「不安」を自信に変えて、<br />
-                  <span className="text-yellow-400">志望校合格へ。</span>
-                </h1>
-                
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <Button 
-                    size="lg" 
-                    onClick={scrollToConsultation}
-                    className="bg-yellow-500 hover:bg-yellow-400 text-slate-900 h-14 px-8 text-lg font-bold shadow-lg shadow-yellow-500/30 hover:shadow-xl hover:shadow-yellow-500/40 transition-all duration-300"
-                  >
-                    かんたん60秒 / 無料カウンセリングを予約 <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </div>
+        {/* Hero Section - Background Image with Stats Overlay Band */}
+        <HeroSection scrollToConsultation={scrollToConsultation} />
 
-                <div className="pt-8 border-t border-white/20 grid grid-cols-3 gap-6 max-w-2xl">
-                  <div>
-                    <div className="text-3xl lg:text-4xl font-bold text-yellow-400">100%</div>
-                    <div className="text-xs text-white/80 mt-1">3年連続<br/>大学進学率</div>
-                  </div>
-                  <div>
-                    <div className="text-3xl lg:text-4xl font-bold text-yellow-400">365日</div>
-                    <div className="text-xs text-white/80 mt-1">徹底した<br/>学習管理</div>
-                  </div>
-                  <div>
-                    <div className="text-3xl lg:text-4xl font-bold text-yellow-400">1日単位</div>
-                    <div className="text-xs text-white/80 mt-1">学習計画<br/>作成</div>
+        {/* Problem → Cause Section (Integrated) */}
+        <section className="py-24 bg-white relative overflow-hidden">
+          {/* Subtle Background Pattern */}
+          <div className="absolute inset-0 opacity-[0.02]">
+            <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, #1e40af 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          </div>
+
+          <div className="container mx-auto px-4 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-4">
+                大学受験の不安はありませんか？
+              </h2>
+              <p className="text-slate-600 text-lg">多くの受験生が同じ悩みに直面しています</p>
+            </motion.div>
+
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 max-w-7xl mx-auto items-center">
+              {/* Left: Anxieties */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="space-y-8"
+              >
+                {[
+                  { icon: TrendingUp, text: "高校に入ってから成績が低下", color: "text-red-600", bg: "bg-red-50" },
+                  { icon: HelpCircle, text: "何から手をつければ良いか分からない", color: "text-orange-600", bg: "bg-orange-50" },
+                  { icon: Clock, text: "勉強が3日坊主で終わる", color: "text-amber-600", bg: "bg-amber-50" }
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-start gap-4 group"
+                  >
+                    <div className={`w-14 h-14 ${item.bg} rounded-2xl flex items-center justify-center ${item.color} flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                      <item.icon className="h-7 w-7" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-3xl font-bold text-slate-300">0{i + 1}</span>
+                      </div>
+                      <p className="text-lg font-medium text-slate-800">{item.text}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {/* Right: Cause with Diagram */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <div className="bg-gradient-to-br from-blue-50 via-white to-blue-50 p-8 lg:p-12 rounded-3xl relative overflow-hidden">
+                  {/* Decorative Elements */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-yellow-500/5 rounded-full blur-3xl" />
+                  
+                  <div className="relative z-10">
+                    <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-6">
+                      <Zap className="h-4 w-4" />
+                      原因はこれ
+                    </div>
+                    
+                    <h3 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-6 leading-tight">
+                      大学受験では学習の難易度や幅が広く...
+                    </h3>
+                    
+                    {/* Visual Comparison */}
+                    <div className="space-y-6 mb-6">
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1 bg-white p-4 rounded-xl border-2 border-primary shadow-sm">
+                          <div className="text-primary font-bold mb-1">学習計画</div>
+                          <div className="text-sm text-slate-600">最短ルートの設計</div>
+                        </div>
+                        <div className="text-3xl font-bold text-primary">×</div>
+                      </div>
+                      
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1 bg-white p-4 rounded-xl border-2 border-yellow-500 shadow-sm">
+                          <div className="text-yellow-600 font-bold mb-1">学習のやり方</div>
+                          <div className="text-sm text-slate-600">効率的な実行</div>
+                        </div>
+                        <div className="text-3xl font-bold text-yellow-500">=</div>
+                      </div>
+                    </div>
+
+                    <div className="bg-gradient-to-r from-primary to-blue-600 text-white p-6 rounded-2xl text-center">
+                      <p className="text-xl font-bold">大きな差が生まれる</p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             </div>
+
+            {/* Bridge to Solution */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mt-16"
+            >
+              <div className="inline-flex items-center gap-3 text-slate-600">
+                <div className="h-px w-12 bg-gradient-to-r from-transparent to-slate-300" />
+                <span className="text-sm font-medium">だからこそ、エンカレッジが選ばれています</span>
+                <div className="h-px w-12 bg-gradient-to-l from-transparent to-slate-300" />
+              </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* Block 2: Strengths Summary (3 Points) */}
-        <section className="py-16 bg-white">
+        {/* Solution + Success Stories (Story Strip Format) */}
+        <section className="py-24 bg-slate-50 relative">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <div className="text-center space-y-3">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-primary mx-auto">
-                  <Target className="h-8 w-8" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">あなただけの合格逆算カリキュラム作成。</h3>
-                <p className="text-sm text-slate-600">志望校から逆算した最適な学習プラン</p>
-              </div>
-              <div className="text-center space-y-3">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-primary mx-auto">
-                  <Calendar className="h-8 w-8" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">1日単位の学習計画で"なにしよう"をなくす。</h3>
-                <p className="text-sm text-slate-600">毎日やることが明確になります</p>
-              </div>
-              <div className="text-center space-y-3">
-                <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 mx-auto">
-                  <Award className="h-8 w-8" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">3年連続で大学進学率100%。</h3>
-                <p className="text-sm text-slate-600">確かな実績で安心してお任せください</p>
-              </div>
-            </div>
-          </div>
-        </section>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <Badge className="bg-primary text-white mb-6 text-sm px-6 py-2">SOLUTION</Badge>
+              <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-6 leading-tight max-w-4xl mx-auto">
+                大学受験エンカレッジは、元大手予備校校舎長が1日単位で学習管理。<br />
+                最短距離の合格を実現します。
+              </h2>
+              <p className="text-slate-600 text-lg">合格までのストーリー</p>
+            </motion.div>
 
-        {/* Block 3: Empathy - Anxiety Presentation */}
-        <section className="py-20 bg-slate-50">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">大学受験の不安はありませんか？</h2>
-              <p className="text-slate-600">多くの受験生が同じ悩みに直面しています。</p>
-            </div>
-
-            <div className="max-w-4xl mx-auto space-y-6">
+            {/* Story Boards - 3 Success Patterns */}
+            <div className="space-y-16 max-w-7xl mx-auto">
               {[
-                "高校に入ってから成績が低下",
-                "何から手をつければ良いか分からない",
-                "勉強が3日坊主で終わる"
-              ].map((item, i) => (
-                <motion.div 
-                  key={i}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="flex items-center gap-4 p-6 bg-white rounded-xl border-l-4 border-slate-300 shadow-sm"
+                {
+                  title: "E判定から逆転合格",
+                  stages: [
+                    { label: "Before", icon: BookOpen, color: "from-red-50 to-red-100", text: "模試判定E・不安", accent: "text-red-600" },
+                    { label: "Turning Point", icon: Target, color: "from-blue-50 to-blue-100", text: "戦略的カリキュラム", accent: "text-blue-600" },
+                    { label: "After", icon: Award, color: "from-green-50 to-green-100", text: "第一志望合格", accent: "text-green-600" }
+                  ]
+                },
+                {
+                  title: "部活引退後からスタート",
+                  stages: [
+                    { label: "Before", icon: Users, color: "from-orange-50 to-orange-100", text: "時間が限られる", accent: "text-orange-600" },
+                    { label: "Turning Point", icon: Clock, color: "from-purple-50 to-purple-100", text: "効率重視プラン", accent: "text-purple-600" },
+                    { label: "After", icon: Star, color: "from-yellow-50 to-yellow-100", text: "間に合って合格", accent: "text-yellow-600" }
+                  ]
+                },
+                {
+                  title: "苦手科目を克服",
+                  stages: [
+                    { label: "Before", icon: BarChart, color: "from-slate-50 to-slate-100", text: "科目バランス悪い", accent: "text-slate-600" },
+                    { label: "Turning Point", icon: Zap, color: "from-teal-50 to-teal-100", text: "弱点集中対策", accent: "text-teal-600" },
+                    { label: "After", icon: TrendingUp, color: "from-emerald-50 to-emerald-100", text: "全科目得点UP", accent: "text-emerald-600" }
+                  ]
+                }
+              ].map((story, storyIdx) => (
+                <motion.div
+                  key={storyIdx}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: storyIdx * 0.2 }}
+                  viewport={{ once: true }}
+                  className="bg-white rounded-3xl p-8 lg:p-12 relative overflow-hidden"
                 >
-                  <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 flex-shrink-0">
-                    <CheckCircle2 className="h-6 w-6" />
+                  {/* Story Title */}
+                  <h3 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-8 text-center">
+                    {story.title}
+                  </h3>
+
+                  {/* 3-Stage Story Strip */}
+                  <div className="grid md:grid-cols-3 gap-8">
+                    {story.stages.map((stage, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, delay: 0.1 + idx * 0.15 }}
+                        viewport={{ once: true }}
+                        className="relative group"
+                      >
+                        {/* Stage Label */}
+                        <div className="absolute -top-4 left-6 z-10">
+                          <span className="inline-block bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-full">
+                            {stage.label}
+                          </span>
+                        </div>
+
+                        {/* Content */}
+                        <div className={`bg-gradient-to-br ${stage.color} rounded-2xl p-8 h-full flex flex-col items-center justify-center text-center space-y-4 group-hover:scale-105 transition-transform duration-300`}>
+                          {/* Icon Placeholder - Replace with Canva */}
+                          <div className="w-32 h-32 flex items-center justify-center">
+                            <stage.icon className={`h-20 w-20 ${stage.accent}`} />
+                          </div>
+                          
+                          {/* Text */}
+                          <p className={`text-lg font-bold ${stage.accent}`}>
+                            {stage.text}
+                          </p>
+
+                          <p className="text-xs text-slate-500 italic">
+                            [Canva画像差替え枠]
+                          </p>
+                        </div>
+
+                        {/* Arrow between stages */}
+                        {idx < 2 && (
+                          <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-20">
+                            <ArrowRight className="h-8 w-8 text-slate-400" />
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
                   </div>
-                  <p className="text-lg text-slate-700">{item}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              viewport={{ once: true }}
+              className="mt-16 text-center"
+            >
+              <Button 
+                onClick={scrollToConsultation}
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-white h-14 px-10 text-lg shadow-lg hover:shadow-xl transition-all group"
+              >
+                あなたの合格ストーリーを始める
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Why Learning Management - Infographic Band */}
+        <section className="py-24 bg-white relative overflow-hidden">
+          {/* Background Illustration - Subtle */}
+          <div className="absolute inset-0 opacity-[0.03]">
+            <div className="absolute top-10 left-10 w-64 h-64">
+              <BookOpen className="w-full h-full text-primary" />
+            </div>
+            <div className="absolute bottom-10 right-10 w-64 h-64">
+              <Target className="w-full h-full text-yellow-500" />
+            </div>
+          </div>
+
+          <div className="container mx-auto px-4 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-4">
+                なぜ大学受験に学習管理が必要なのか？
+              </h2>
+            </motion.div>
+
+            {/* Horizontal Infographic Band */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="max-w-7xl mx-auto"
+            >
+              <div className="bg-gradient-to-r from-blue-50 via-white to-yellow-50 rounded-3xl p-1 relative">
+                <div className="bg-white rounded-3xl p-8 lg:p-12 relative overflow-hidden">
+                  <div className="grid md:grid-cols-3 gap-0 divide-x-0 md:divide-x divide-slate-100">
+                    {[
+                      {
+                        icon: School,
+                        title: "大学学部・試験方式",
+                        subtitle: "求められる力が異なる",
+                        color: "text-blue-600",
+                        bgColor: "bg-blue-50"
+                      },
+                      {
+                        icon: BookOpen,
+                        title: "学習範囲・深さ",
+                        subtitle: "高校受験と段違い",
+                        color: "text-purple-600",
+                        bgColor: "bg-purple-50"
+                      },
+                      {
+                        icon: Video,
+                        title: "教材・ツール",
+                        subtitle: "溢れている",
+                        color: "text-amber-600",
+                        bgColor: "bg-amber-50"
+                      }
+                    ].map((item, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+                        viewport={{ once: true }}
+                        className="px-6 lg:px-10 py-6 text-center group cursor-default"
+                      >
+                        {/* Icon */}
+                        <div className={`inline-flex items-center justify-center w-20 h-20 ${item.bgColor} rounded-2xl mb-6 ${item.color} group-hover:scale-110 transition-transform duration-300`}>
+                          <item.icon className="h-10 w-10" />
+                        </div>
+
+                        {/* Number Badge */}
+                        <div className="inline-block bg-slate-900 text-white text-sm font-bold px-3 py-1 rounded-full mb-4">
+                          0{idx + 1}
+                        </div>
+
+                        {/* Title */}
+                        <h3 className="text-xl font-bold text-slate-900 mb-2">
+                          {item.title}
+                        </h3>
+
+                        {/* Subtitle */}
+                        <p className={`text-sm font-medium ${item.color}`}>
+                          {item.subtitle}
+                        </p>
+
+                        {/* Hover indicator */}
+                        <div className={`mt-4 h-1 w-0 group-hover:w-full ${item.bgColor} transition-all duration-300 rounded-full mx-auto`} />
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Bottom Summary */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    viewport={{ once: true }}
+                    className="mt-10 pt-10 border-t border-slate-100 text-center"
+                  >
+                    <p className="text-lg text-slate-700 max-w-3xl mx-auto">
+                      だからこそ、<span className="font-bold text-primary text-xl">プロによる学習管理</span>が
+                      合格への最短ルートになります
+                    </p>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Meaningful Arrow - Misconception → Solution */}
+        <section className="py-24 bg-slate-50">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl lg:text-4xl font-bold text-slate-900">
+                他にもこんな不安も・・・
+              </h2>
+            </motion.div>
+
+            <div className="max-w-6xl mx-auto space-y-8">
+              {[
+                {
+                  misconception: { icon: Video, text: "映像授業をたくさん受けているけど伸びない", color: "text-red-600", bg: "bg-red-50" },
+                  cause: "復習計画が不足",
+                  solution: { text: "アウトプット（復習）の計画まで徹底管理", highlight: "復習スケジュール" }
+                },
+                {
+                  misconception: { icon: School, text: "集団塾に頑張って通っているけど...", color: "text-orange-600", bg: "bg-orange-50" },
+                  cause: "レベルが合わない",
+                  solution: { text: "あなたの学力・志望校に合わせた個別カリキュラム", highlight: "個別最適化" }
+                }
+              ].map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: idx * 0.2 }}
+                  viewport={{ once: true }}
+                  className="bg-white rounded-3xl p-8 lg:p-10"
+                >
+                  <div className="grid lg:grid-cols-[1fr,auto,1fr] gap-8 items-center">
+                    {/* Left: Misconception */}
+                    <div className="text-center lg:text-right">
+                      <div className={`inline-flex items-center gap-3 ${item.misconception.bg} px-6 py-4 rounded-2xl`}>
+                        <item.misconception.icon className={`h-8 w-8 ${item.misconception.color} flex-shrink-0`} />
+                        <span className="text-lg font-medium text-slate-800">{item.misconception.text}</span>
+                      </div>
+                    </div>
+
+                    {/* Center: Arrow with Cause */}
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="relative">
+                        {/* Animated Arrow */}
+                        <motion.div
+                          initial={{ x: -10, opacity: 0 }}
+                          whileInView={{ x: 0, opacity: 1 }}
+                          transition={{ duration: 0.8, delay: 0.3 + idx * 0.2 }}
+                          viewport={{ once: true }}
+                        >
+                          <ArrowRight className="h-12 w-12 text-primary" />
+                        </motion.div>
+                        
+                        {/* Cause Label */}
+                        <motion.div
+                          initial={{ scale: 0, opacity: 0 }}
+                          whileInView={{ scale: 1, opacity: 1 }}
+                          transition={{ duration: 0.5, delay: 0.5 + idx * 0.2 }}
+                          viewport={{ once: true }}
+                          className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap"
+                        >
+                          <span className="inline-block bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-full">
+                            原因: {item.cause}
+                          </span>
+                        </motion.div>
+                      </div>
+                    </div>
+
+                    {/* Right: Solution */}
+                    <div className="text-center lg:text-left mt-8 lg:mt-0">
+                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 px-6 py-4 rounded-2xl border-2 border-primary">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CheckCircle2 className="h-5 w-5 text-primary" />
+                          <span className="text-xs font-bold text-primary uppercase">Solution</span>
+                        </div>
+                        <p className="text-lg font-medium text-slate-800">
+                          {item.solution.text.split(item.solution.highlight)[0]}
+                          <span className="font-bold text-primary">{item.solution.highlight}</span>
+                          {item.solution.text.split(item.solution.highlight)[1]}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Block 4: Cause Presentation */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto">
-              <div className="p-8 lg:p-12 bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-blue-100 text-center">
-                <p className="text-lg lg:text-xl font-medium text-slate-800 leading-relaxed">
-                  大学受験では学習の難易度や幅が広く、<br className="hidden md:block" />
-                  <span className="text-primary font-bold text-2xl">「学習計画」</span>と<span className="text-primary font-bold text-2xl">「学習のやり方」</span>で<br className="hidden md:block" />
-                  大きな差が生まれてしまいます。
-                </p>
-              </div>
-            </div>
+        {/* Statement Banner - Companion Message */}
+        <section className="relative py-32 overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            <img 
+              src="/images/counseling.png" 
+              alt="プロによる伴走" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/90 to-slate-900/85" />
           </div>
-        </section>
 
-        {/* Block 5: Solution + Success Examples (3 Patterns) */}
-        <section className="py-20 bg-slate-50">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
-                大学受験エンカレッジは、<br className="md:hidden" />元大手予備校校舎長が1日単位で学習管理。<br />
-                最短距離の合格を実現します。
+          {/* Quote Mark Background */}
+          <div className="absolute top-10 left-10 text-primary/10 text-[200px] font-serif leading-none">"</div>
+
+          {/* Content */}
+          <div className="container mx-auto px-4 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="max-w-5xl mx-auto text-center"
+            >
+              <h2 className="text-3xl lg:text-6xl font-bold text-white leading-tight mb-8">
+                大学受験エンカレッジでは<br className="hidden lg:block" />
+                生徒一人ひとりに、
+                <span className="block mt-4 text-yellow-400">
+                  大学受験予備校での<br className="lg:hidden" />校舎長経験がある<br className="hidden lg:block" />
+                  スタッフが伴走。
+                </span>
               </h2>
-              <p className="text-slate-600 text-lg mt-4">合格実績の実例</p>
-            </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {/* Success Example 1 - Will be replaced with Canva illustration */}
-              <div className="bg-white rounded-xl p-8 shadow-lg border border-slate-100 text-center">
-                <div className="aspect-square bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl mb-6 flex items-center justify-center">
-                  <div className="text-center">
-                    <BookOpen className="h-16 w-16 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-slate-500">[イラスト枠]</p>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">E判定から逆転合格</h3>
-                <p className="text-sm text-slate-600">模試の判定が悪くても、戦略次第で合格できます</p>
-              </div>
-
-              {/* Success Example 2 - Will be replaced with Canva illustration */}
-              <div className="bg-white rounded-xl p-8 shadow-lg border border-slate-100 text-center">
-                <div className="aspect-square bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-xl mb-6 flex items-center justify-center">
-                  <div className="text-center">
-                    <Users className="h-16 w-16 text-yellow-600 mx-auto mb-2" />
-                    <p className="text-xs text-slate-500">[イラスト枠]</p>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">部活引退後からスタート</h3>
-                <p className="text-sm text-slate-600">限られた時間でも効率的な学習で合格</p>
-              </div>
-
-              {/* Success Example 3 - Will be replaced with Canva illustration */}
-              <div className="bg-white rounded-xl p-8 shadow-lg border border-slate-100 text-center">
-                <div className="aspect-square bg-gradient-to-br from-green-100 to-green-50 rounded-xl mb-6 flex items-center justify-center">
-                  <div className="text-center">
-                    <BarChart className="h-16 w-16 text-green-600 mx-auto mb-2" />
-                    <p className="text-xs text-slate-500">[イラスト枠]</p>
-                  </div>
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">苦手科目を克服</h3>
-                <p className="text-sm text-slate-600">科目の偏りを解消し、バランス良く得点</p>
-              </div>
-            </div>
-
-            <div className="mt-12 text-center">
-              <Button 
-                onClick={scrollToConsultation}
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-white h-12 px-8 shadow-md"
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
+                className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-6 py-3 rounded-full"
               >
-                まずは無料カウンセリング <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* Block 6: Why Learning Management is Necessary (3 Points) */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-6">
-                なぜ大学受験に学習管理が必要なのか？
-              </h2>
-            </div>
-
-            <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-8">
-              <div className="p-8 bg-slate-50 rounded-xl border border-slate-200">
-                <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">1</div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">大学学部・試験方式で<br />求められる力が異なる</h3>
-                <p className="text-sm text-slate-600">志望校に応じた最適な戦略が必要です</p>
-              </div>
-
-              <div className="p-8 bg-slate-50 rounded-xl border border-slate-200">
-                <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">2</div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">学習範囲・深さが<br />高校受験と段違い</h3>
-                <p className="text-sm text-slate-600">膨大な範囲を効率的に学ぶ必要があります</p>
-              </div>
-
-              <div className="p-8 bg-slate-50 rounded-xl border border-slate-200">
-                <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mb-4">3</div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">教材・ツールが<br />溢れている</h3>
-                <p className="text-sm text-slate-600">自分に合った教材選びが重要です</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Block 7: Additional Anxiety + Arrow Explanation */}
-        <section className="py-20 bg-slate-50">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-8 text-center">
-                他にもこんな不安も・・・
-              </h2>
-
-              <div className="space-y-8">
-                {/* Concern 1 */}
-                <div className="bg-white rounded-xl p-8 border border-slate-200">
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Video className="h-6 w-6 text-red-600" />
-                    </div>
-                    <div>
-                      <p className="text-lg font-bold text-slate-900 mb-2">映像授業をたくさん受講しているけど伸びない</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-center mb-6">
-                    <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent" />
-                    <ArrowRight className="h-8 w-8 text-primary flex-shrink-0 mx-4" />
-                    <div className="w-full h-0.5 bg-gradient-to-r from-primary via-primary to-transparent" />
-                  </div>
-                  <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
-                    <p className="text-slate-700 leading-relaxed">
-                      映像授業のインプットは効率的。ただし<span className="font-bold text-primary">復習（アウトプット）の計画性</span>が伸びを分けます。エンカレッジでは復習スケジュールまで徹底管理します。
-                    </p>
-                  </div>
-                </div>
-
-                {/* Concern 2 */}
-                <div className="bg-white rounded-xl p-8 border border-slate-200">
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <School className="h-6 w-6 text-orange-600" />
-                    </div>
-                    <div>
-                      <p className="text-lg font-bold text-slate-900 mb-2">集団塾の授業に頑張って取り組んでいるけど...</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-center mb-6">
-                    <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent" />
-                    <ArrowRight className="h-8 w-8 text-primary flex-shrink-0 mx-4" />
-                    <div className="w-full h-0.5 bg-gradient-to-r from-primary via-primary to-transparent" />
-                  </div>
-                  <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
-                    <p className="text-slate-700 leading-relaxed">
-                      <span className="font-bold text-primary">レベルが合わないと伸びません。</span>あなたの現在の学力と志望校に合わせた個別カリキュラムが必要です。
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Block 8: Companion Presentation */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="p-8 lg:p-12 bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-blue-100">
-                <p className="text-lg lg:text-xl font-medium text-slate-800 leading-relaxed">
-                  大学受験エンカレッジでは生徒一人ひとりに、<br />
-                  <span className="text-primary font-bold text-2xl">大学受験予備校での校舎長経験があるスタッフが伴走。</span>
-                </p>
-              </div>
-            </div>
+                <ShieldCheck className="h-6 w-6 text-yellow-400" />
+                <span className="text-white font-bold">元大手予備校 校舎長経験</span>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
 
@@ -477,89 +815,132 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Block 11: Benefit Enhancement */}
-        <section className="py-20 bg-slate-50">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="p-8 lg:p-12 bg-white rounded-2xl border-2 border-blue-100 shadow-lg">
-                <p className="text-xl lg:text-2xl font-bold text-slate-900 leading-relaxed mb-6">
-                  1日単位の学習計画、学習管理を通して、
-                </p>
-                <p className="text-2xl lg:text-3xl font-bold text-primary leading-relaxed">
-                  「何をすれば良いか分からない」<br />
-                  「毎日頑張れない」を<br className="md:hidden" />今すぐ脱出！
-                </p>
-              </div>
-            </div>
+        {/* Integrated: Promise → Anxiety → Solution (Continuation Mechanism) */}
+        <section className="py-24 bg-white relative overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-[0.02]">
+            <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(to right, #1e40af 1px, transparent 1px), linear-gradient(to bottom, #1e40af 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
           </div>
-        </section>
 
-        {/* Block 12: Empathy for Continuation Anxiety */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center">
-              <div className="p-8 lg:p-12 bg-orange-50 rounded-2xl border-2 border-orange-200">
-                <HelpCircle className="h-16 w-16 text-orange-600 mx-auto mb-4" />
-                <p className="text-2xl lg:text-3xl font-bold text-slate-900 leading-relaxed">
-                  「でも、毎日努力し続けられるかも不安・・・」
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Block 13: Continuation Mechanism (Learning Management + Sheet) */}
-        <section className="py-20 bg-slate-50">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
-                学習を継続し続けるための<br className="md:hidden" />サポートがあります
-              </h2>
-              <p className="text-slate-600 text-lg">安心して学習を続けられる環境を用意しています</p>
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
-              {/* Learning Management Sheet Mock */}
-              <div className="order-2 lg:order-1">
-                <div className="relative rounded-xl overflow-hidden shadow-xl border border-slate-200 bg-white p-2">
-                  <img src="/images/sheet-mock.png" alt="学習管理用シート" className="w-full h-auto rounded-lg" />
-                  <div className="absolute top-4 right-4 bg-yellow-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                    学習管理シート
-                  </div>
-                </div>
-                <p className="text-sm text-slate-500 mt-4 text-center">
-                  ※イラスト/図解は差し替え可能（Canva等で作成）
-                </p>
-              </div>
-
-              <div className="order-1 lg:order-2 space-y-8">
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">1</div>
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-2">1日単位の学習管理</h3>
-                    <p className="text-slate-600 leading-relaxed">
-                      毎日の学習内容を細かく管理。「今日何をすべきか」が明確になり、迷いなく学習を進められます。
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">2</div>
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-2">学習管理用シート</h3>
-                    <p className="text-slate-600 leading-relaxed">
-                      進捗を可視化するシートで、達成感を実感。モチベーションを維持しながら学習を続けられます。
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-6 bg-blue-50 rounded-lg border border-blue-100">
-                  <p className="text-slate-700">
-                    <span className="font-bold text-primary">週1回の面談</span>と<span className="font-bold text-primary">毎日の報告</span>で、
-                    サボらない環境を作ります。
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-6xl mx-auto">
+              {/* Promise */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="text-center mb-12"
+              >
+                <div className="inline-block bg-gradient-to-r from-primary to-blue-600 text-white px-8 py-6 rounded-3xl mb-8">
+                  <p className="text-2xl lg:text-3xl font-bold leading-tight">
+                    1日単位の学習計画で<br />
+                    「何をすれば良いか分からない」を<span className="text-yellow-400">今すぐ解決</span>
                   </p>
                 </div>
-              </div>
+              </motion.div>
+
+              {/* Connection Line with Anxiety */}
+              <motion.div
+                initial={{ scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="flex justify-center my-8"
+              >
+                <div className="h-16 w-1 bg-gradient-to-b from-primary to-orange-500" />
+              </motion.div>
+
+              {/* Anxiety */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+                className="text-center mb-12"
+              >
+                <div className="inline-flex items-center gap-4 bg-orange-50 border-2 border-orange-300 px-8 py-6 rounded-3xl">
+                  <HelpCircle className="h-10 w-10 text-orange-600 flex-shrink-0" />
+                  <p className="text-xl lg:text-2xl font-bold text-slate-900">
+                    でも、毎日努力し続けられるか不安...
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Bridge Line */}
+              <motion.div
+                initial={{ scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                viewport={{ once: true }}
+                className="flex justify-center my-8"
+              >
+                <div className="h-16 w-1 bg-gradient-to-b from-orange-500 to-green-500" />
+              </motion.div>
+
+              {/* Solution: Continuation Mechanism */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                viewport={{ once: true }}
+                className="bg-gradient-to-br from-green-50 to-blue-50 rounded-3xl p-8 lg:p-12"
+              >
+                <div className="text-center mb-10">
+                  <Badge className="bg-green-600 text-white mb-4 text-sm px-6 py-2">継続の仕組み</Badge>
+                  <h3 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
+                    学習を継続し続けるためのサポート
+                  </h3>
+                  <p className="text-slate-600 text-lg">安心して学習を続けられる環境を用意しています</p>
+                </div>
+
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                  {/* Mock Image */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 1 }}
+                    viewport={{ once: true }}
+                    className="relative"
+                  >
+                    <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+                      <img src="/images/sheet-mock.png" alt="学習管理用シート" className="w-full h-auto" />
+                      <div className="absolute top-4 right-4 bg-yellow-500 text-slate-900 text-sm font-bold px-4 py-2 rounded-full shadow-lg">
+                        学習管理シート
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-3 text-center italic">
+                      ※Canva等で作成した図解に差替え可能
+                    </p>
+                  </motion.div>
+
+                  {/* Features */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 1.2 }}
+                    viewport={{ once: true }}
+                    className="space-y-6"
+                  >
+                    {[
+                      { icon: Calendar, title: "1日単位の学習管理", desc: "今日何をすべきか明確に" },
+                      { icon: CheckCircle2, title: "進捗可視化シート", desc: "達成感を実感できる" },
+                      { icon: Users, title: "週1回の面談", desc: "プロが進捗を確認" },
+                      { icon: MessageCircle, title: "毎日の報告", desc: "サボらない環境" }
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-4 bg-white p-4 rounded-xl">
+                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary flex-shrink-0">
+                          <item.icon className="h-6 w-6" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-900 mb-1">{item.title}</h4>
+                          <p className="text-sm text-slate-600">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </motion.div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -795,43 +1176,113 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Block 16: Flow Section - Timeline (Updated to 4 Steps) */}
-        <section className="py-20 bg-white">
+        {/* Metro Map Style - Journey to Success */}
+        <section className="py-24 bg-gradient-to-b from-slate-50 to-white">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">ご利用の流れ</h2>
-              <p className="text-slate-600 text-lg">まずは現状の悩みをお聞かせください。無理な勧誘は一切ありません。</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mb-4">
+                ご利用の流れ
+              </h2>
+              <p className="text-slate-600 text-lg">無理な勧誘は一切ありません。まずはお気軽にご相談ください。</p>
+            </motion.div>
 
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-7xl mx-auto">
+              {/* Metro Line Container */}
               <div className="relative">
-                {/* Vertical Line */}
-                <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-slate-200 md:left-1/2 md:-ml-px"></div>
+                {/* Main Line */}
+                <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-2 bg-gradient-to-r from-primary via-blue-500 to-green-500 rounded-full -translate-y-1/2" />
 
-                {[
-                  { step: "01", title: "お申し込み", desc: "フォームから60秒で予約完了。", icon: <CheckCircle2 className="h-6 w-6" /> },
-                  { step: "02", title: "事前アンケート", desc: "現状の成績や志望校をお聞かせください。", icon: <BookOpen className="h-6 w-6" /> },
-                  { step: "03", title: "日程調整", desc: "ご都合の良い日時を調整いたします。", icon: <Calendar className="h-6 w-6" /> },
-                  { step: "04", title: "無料カウンセリング", desc: "現状分析と学習プランをご提案します。", icon: <Users className="h-6 w-6" /> }
-                ].map((item, i) => (
-                  <div key={i} className={`relative flex items-center mb-12 ${i % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
-                    <div className="flex-1 md:w-1/2"></div>
-                    <div className="absolute left-0 w-16 h-16 bg-white border-4 border-primary rounded-full flex items-center justify-center z-10 md:left-1/2 md:-ml-8 shadow-md">
-                      <span className="text-xl font-bold text-primary">{item.step}</span>
-                    </div>
-                    <div className="flex-1 md:w-1/2 pl-24 md:pl-0 md:px-12">
-                      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-primary">
-                            {item.icon}
-                          </div>
-                          <h3 className="text-lg font-bold text-slate-900">{item.title}</h3>
+                {/* Stations */}
+                <div className="grid lg:grid-cols-4 gap-8 lg:gap-4">
+                  {[
+                    { 
+                      step: "01", 
+                      title: "お申し込み", 
+                      desc: "フォームから60秒で予約完了",
+                      icon: CheckCircle2,
+                      color: "from-blue-500 to-blue-600"
+                    },
+                    { 
+                      step: "02", 
+                      title: "事前アンケート", 
+                      desc: "現状の成績や志望校をお聞かせください",
+                      icon: BookOpen,
+                      color: "from-purple-500 to-purple-600"
+                    },
+                    { 
+                      step: "03", 
+                      title: "日程調整", 
+                      desc: "ご都合の良い日時を調整いたします",
+                      icon: Calendar,
+                      color: "from-amber-500 to-amber-600"
+                    },
+                    { 
+                      step: "04", 
+                      title: "無料カウンセリング", 
+                      desc: "現状分析と学習プランをご提案",
+                      icon: Users,
+                      color: "from-green-500 to-green-600"
+                    }
+                  ].map((station, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: idx * 0.15 }}
+                      viewport={{ once: true }}
+                      className="relative"
+                    >
+                      {/* Station Marker */}
+                      <div className="flex justify-center mb-6 lg:mb-8">
+                        <div className={`w-20 h-20 bg-gradient-to-br ${station.color} rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg relative z-10 ring-4 ring-white`}>
+                          {station.step}
                         </div>
-                        <p className="text-slate-600 text-sm">{item.desc}</p>
                       </div>
-                    </div>
+
+                      {/* Station Info Card */}
+                      <div className="bg-white rounded-2xl p-6 border-2 border-slate-100 hover:border-primary/30 hover:shadow-lg transition-all duration-300 group">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className={`w-12 h-12 bg-gradient-to-br ${station.color} rounded-xl flex items-center justify-center text-white`}>
+                            <station.icon className="h-6 w-6" />
+                          </div>
+                          <h3 className="text-lg font-bold text-slate-900">{station.title}</h3>
+                        </div>
+                        <p className="text-sm text-slate-600 leading-relaxed">{station.desc}</p>
+                        
+                        {/* Hover indicator */}
+                        <div className="mt-4 h-1 w-0 group-hover:w-full bg-gradient-to-r from-primary to-blue-500 transition-all duration-300 rounded-full" />
+                      </div>
+
+                      {/* Arrow between stations (mobile only) */}
+                      {idx < 3 && (
+                        <div className="lg:hidden flex justify-center my-6">
+                          <ArrowRight className="h-8 w-8 text-primary rotate-90" />
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Destination Flag */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.8 }}
+                  viewport={{ once: true }}
+                  className="mt-12 text-center"
+                >
+                  <div className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 px-8 py-4 rounded-full font-bold text-lg shadow-lg">
+                    <Star className="h-6 w-6" />
+                    志望校合格へ
+                    <Star className="h-6 w-6" />
                   </div>
-                ))}
+                </motion.div>
               </div>
             </div>
           </div>
