@@ -225,7 +225,7 @@ export default function Home() {
             {/* Vertical Story: Anxieties → Bridge → Tags → Link */}
             <div className="max-w-4xl mx-auto">
               
-              {/* Step 1: Anxieties (Vertical, Center-aligned) */}
+              {/* Step 1: Anxieties (Vertical) */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -244,13 +244,13 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-center justify-center gap-5"
+                    className="flex items-start gap-5"
                   >
                     <div className={`w-14 h-14 ${item.bg} rounded-2xl flex items-center justify-center ${item.color} flex-shrink-0`}>
                       <item.icon className="h-7 w-7" />
                     </div>
-                    <div className="pt-2">
-                      <p className="text-lg font-medium text-slate-800 leading-relaxed text-center">{item.text}</p>
+                    <div className="flex-1 pt-2">
+                      <p className="text-lg font-medium text-slate-800 leading-relaxed">{item.text}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -292,7 +292,13 @@ export default function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.3 + tag.delay }}
                         viewport={{ once: true }}
-                        className="bg-white/15 backdrop-blur-md border border-white/20 px-6 py-3 rounded-full text-sm font-medium text-slate-700"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.6)',
+                          backdropFilter: 'blur(16px)',
+                          WebkitBackdropFilter: 'blur(16px)',
+                          border: '1px solid rgba(255, 255, 255, 0.3)'
+                        }}
+                        className="px-6 py-3 rounded-full text-sm font-medium text-slate-700"
                       >
                         {tag.text}
                       </motion.div>
