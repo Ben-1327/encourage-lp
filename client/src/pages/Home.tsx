@@ -201,7 +201,7 @@ export default function Home() {
         {/* Hero Section - Background Image with Stats Overlay Band */}
         <HeroSection scrollToConsultation={scrollToConsultation} />
 
-        {/* Problem → Cause Section (Integrated) */}
+        {/* Problem → Study Planning Need Section (Vertical Story) */}
         <section className="py-24 bg-white relative overflow-hidden">
           {/* Subtle Background Pattern */}
           <div className="absolute inset-0 opacity-[0.02]">
@@ -222,14 +222,16 @@ export default function Home() {
               <p className="text-slate-600 text-lg">多くの受験生が同じ悩みに直面しています</p>
             </motion.div>
 
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 max-w-7xl mx-auto items-center">
-              {/* Left: Anxieties */}
+            {/* Vertical Story: Anxieties → Bridge → Tags → Link */}
+            <div className="max-w-4xl mx-auto space-y-16">
+              
+              {/* Step 1: Anxieties (Vertical) */}
               <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
-                className="space-y-8"
+                className="space-y-6"
               >
                 {[
                   { icon: TrendingUp, text: "高校に入ってから成績が低下", color: "text-red-600", bg: "bg-red-50" },
@@ -238,119 +240,80 @@ export default function Home() {
                 ].map((item, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-start gap-4 group"
+                    className="flex items-start gap-5"
                   >
-                    <div className={`w-14 h-14 ${item.bg} rounded-2xl flex items-center justify-center ${item.color} flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                    <div className={`w-14 h-14 ${item.bg} rounded-2xl flex items-center justify-center ${item.color} flex-shrink-0`}>
                       <item.icon className="h-7 w-7" />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="text-3xl font-bold text-slate-300">0{i + 1}</span>
-                      </div>
-                      <p className="text-lg font-medium text-slate-800">{item.text}</p>
+                    <div className="flex-1 pt-2">
+                      <p className="text-lg font-medium text-slate-800 leading-relaxed">{item.text}</p>
                     </div>
                   </motion.div>
                 ))}
               </motion.div>
 
-              {/* Right: Cause with Visual Comparison (No symbols) */}
+              {/* Step 2: Bridge Copy (Study Planning Need) */}
               <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.15 }}
                 viewport={{ once: true }}
-                className="relative"
+                className="relative py-12"
               >
-                <div className="bg-gradient-to-br from-blue-50 via-white to-blue-50 p-8 lg:p-12 rounded-3xl relative overflow-hidden">
-                  {/* Decorative Elements */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-yellow-500/5 rounded-full blur-3xl" />
-                  
-                  <div className="relative z-10">
-                    <div className="info-badge inline-flex items-center gap-2 text-primary mb-6">
-                      <Zap className="h-4 w-4" />
-                      原因はこれ
-                    </div>
-                    
-                    <h3 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-6 leading-tight">
-                      大学受験では学習の難易度や幅が広く...
-                    </h3>
-                    
-                    {/* Visual Comparison - 2 Column */}
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      {/* Left: General State */}
-                      <div className="space-y-3">
-                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">一般的な状態</div>
-                        <div className="bg-slate-50 p-4 rounded-xl">
-                          <div className="flex items-start gap-2">
-                            <HelpCircle className="h-5 w-5 text-slate-400 flex-shrink-0 mt-0.5" />
-                            <div>
-                              <div className="font-medium text-slate-700 mb-1">計画なし</div>
-                              <div className="text-xs text-slate-500">何から始める？</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="bg-slate-50 p-4 rounded-xl">
-                          <div className="flex items-start gap-2">
-                            <HelpCircle className="h-5 w-5 text-slate-400 flex-shrink-0 mt-0.5" />
-                            <div>
-                              <div className="font-medium text-slate-700 mb-1">方法不明</div>
-                              <div className="text-xs text-slate-500">効率悪い</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                {/* Subtle decorative background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-blue-50/30 rounded-3xl -mx-8" />
+                
+                <div className="relative z-10 text-center px-8 space-y-8">
+                  <p className="text-2xl lg:text-3xl font-semibold text-slate-800 leading-relaxed">
+                    積み上げが重要な大学受験では、学習計画が<br className="hidden sm:block" />
+                    <span className="text-primary font-bold border-b-4 border-primary/30">「継続と復習」</span>を支え、成果を安定させます。
+                  </p>
 
-                      {/* Right: With Encourage */}
-                      <div className="space-y-3">
-                        <div className="text-xs font-bold text-primary uppercase tracking-wider mb-2">エンカレッジ</div>
-                        <div className="frosted-glass p-4 rounded-xl border border-primary/30">
-                          <div className="flex items-start gap-2">
-                            <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                            <div>
-                              <div className="font-bold text-primary mb-1">学習計画</div>
-                              <div className="text-xs text-slate-600">最短ルート設計</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="frosted-glass p-4 rounded-xl border border-primary/30">
-                          <div className="flex items-start gap-2">
-                            <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                            <div>
-                              <div className="font-bold text-primary mb-1">学習のやり方</div>
-                              <div className="text-xs text-slate-600">効率的実行</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  {/* Step 3: Reassurance Tags */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.15 }}
+                    viewport={{ once: true }}
+                    className="flex flex-wrap justify-center gap-4 pt-4"
+                  >
+                    {[
+                      { text: "迷いを減らす", delay: 0 },
+                      { text: "復習まで設計", delay: 0.1 },
+                      { text: "毎日調整できる", delay: 0.2 }
+                    ].map((tag, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 + tag.delay }}
+                        viewport={{ once: true }}
+                        className="frosted-glass px-6 py-3 rounded-full text-sm font-medium text-slate-700 border border-slate-200/50"
+                      >
+                        {tag.text}
+                      </motion.div>
+                    ))}
+                  </motion.div>
 
-                    <div className="bg-gradient-to-r from-primary to-blue-600 text-white p-6 rounded-2xl text-center">
-                      <p className="text-xl font-bold">大きな差が生まれる</p>
-                    </div>
-                  </div>
+                  {/* Step 4: Link Label (Non-button) */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
+                    viewport={{ once: true }}
+                    className="flex items-center justify-center gap-2 text-slate-600 pt-4"
+                  >
+                    <ArrowRight className="h-4 w-4 text-primary" />
+                    <span className="text-base font-medium">その計画を「続く形」に整える仕組みがあります</span>
+                  </motion.div>
                 </div>
               </motion.div>
-            </div>
 
-            {/* Bridge to Solution */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              viewport={{ once: true }}
-              className="text-center mt-16"
-            >
-              <div className="inline-flex items-center gap-3 text-slate-600">
-                <div className="h-px w-12 bg-gradient-to-r from-transparent to-slate-300" />
-                <span className="text-sm font-medium">だからこそ、エンカレッジが選ばれています</span>
-                <div className="h-px w-12 bg-gradient-to-l from-transparent to-slate-300" />
-              </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
