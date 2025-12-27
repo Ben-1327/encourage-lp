@@ -223,15 +223,15 @@ export default function Home() {
             </motion.div>
 
             {/* Vertical Story: Anxieties → Bridge → Tags → Link */}
-            <div className="max-w-4xl mx-auto space-y-16">
+            <div className="max-w-4xl mx-auto">
               
-              {/* Step 1: Anxieties (Vertical) */}
+              {/* Step 1: Anxieties (Vertical, Center-aligned) */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{ once: true }}
-                className="space-y-6"
+                className="space-y-6 mb-24"
               >
                 {[
                   { icon: TrendingUp, text: "高校に入ってから成績が低下", color: "text-red-600", bg: "bg-red-50" },
@@ -244,13 +244,13 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
                     viewport={{ once: true }}
-                    className="flex items-start gap-5"
+                    className="flex items-center justify-center gap-5"
                   >
                     <div className={`w-14 h-14 ${item.bg} rounded-2xl flex items-center justify-center ${item.color} flex-shrink-0`}>
                       <item.icon className="h-7 w-7" />
                     </div>
-                    <div className="flex-1 pt-2">
-                      <p className="text-lg font-medium text-slate-800 leading-relaxed">{item.text}</p>
+                    <div className="pt-2">
+                      <p className="text-lg font-medium text-slate-800 leading-relaxed text-center">{item.text}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -273,7 +273,7 @@ export default function Home() {
                     <span className="text-primary font-bold border-b-4 border-primary/30">「継続と復習」</span>を支え、成果を安定させます。
                   </p>
 
-                  {/* Step 3: Reassurance Tags */}
+                  {/* Step 3: Reassurance Tags - Frosted Glass Labels */}
                   <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
@@ -292,7 +292,7 @@ export default function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.3 + tag.delay }}
                         viewport={{ once: true }}
-                        className="frosted-glass px-6 py-3 rounded-full text-sm font-medium text-slate-700 border border-slate-200/50"
+                        className="bg-white/15 backdrop-blur-md border border-white/20 px-6 py-3 rounded-full text-sm font-medium text-slate-700"
                       >
                         {tag.text}
                       </motion.div>
